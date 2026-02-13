@@ -547,6 +547,10 @@ export class ZStackAdapter extends Adapter {
             );
         }
 
+        if(this.queue.count() > 1){
+            throw new Error("New task in queue!")
+        }
+
         const dataConfirmResult = await this.dataRequest(
             networkAddress,
             endpoint,
