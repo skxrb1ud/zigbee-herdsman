@@ -516,11 +516,15 @@ export class ZStackAdapter extends Adapter {
         assocRemove: boolean,
         assocRestore?: {ieeeadr: string; nwkaddr: number; noderelation: number},
     ): Promise<Events.ZclPayload | undefined> {
+        if(this.queue.count() > 1){
+            throw new Error("New task in queue!")
+        }
         logger.debug(
             `sendZclFrameToEndpointInternal ${ieeeAddr}:${networkAddress}/${endpoint} ` +
                 `(${responseAttempt},${dataRequestAttempt},${this.queue.count()})`,
             NS,
         );
+
         let response = null;
         const command = zclFrame.command;
         if (command.response !== undefined && disableResponse === false) {
@@ -545,10 +549,6 @@ export class ZStackAdapter extends Adapter {
                 Zcl.Foundation.defaultRsp.ID,
                 timeout,
             );
-        }
-
-        if(this.queue.count() > 1){
-            throw new Error("New task in queue!")
         }
 
         const dataConfirmResult = await this.dataRequest(
